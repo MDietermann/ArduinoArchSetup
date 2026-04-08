@@ -8,18 +8,18 @@ A keyboard-driven, mouse-free Arch Linux setup for Arduino development built on 
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Zellij (multiplexer + workspace manager)        │
-│ ┌─────────────────────┬───────────────────────┐  │
-│ │  Neovim (LazyVim)   │  Serial Monitor       │  │
-│ │  - clangd LSP       │  (arduino-cli monitor)│  │
-│ │  - Arduino syntax   │                       │  │
-│ │  - compile/upload   │                       │  │
-│ │    keybinds         │                       │  │
-│ ├─────────────────────┼───────────────────────┤  │
-│ │  Terminal / Build   │  lazygit              │  │
-│ │  output pane        │                       │  │
-│ └─────────────────────┴───────────────────────┘  │
-│  [zjstatus bar — board | port | project | git]   │
+│  Zellij (multiplexer + workspace manager)       │
+│ ┌─────────────────────┬───────────────────────┐ │
+│ │  Neovim (LazyVim)   │  Serial Monitor       │ │
+│ │  - clangd LSP       │  (arduino-cli monitor)│ │
+│ │  - Arduino syntax   │                       │ │
+│ │  - compile/upload   │                       │ │
+│ │    keybinds         │                       │ │
+│ ├─────────────────────┼───────────────────────┤ │
+│ │  Terminal / Build   │  lazygit              │ │
+│ │  output pane        │                       │ │
+│ └─────────────────────┴───────────────────────┘ │
+│  [zjstatus bar — board | port | project | git]  │
 └─────────────────────────────────────────────────┘
 ```
 

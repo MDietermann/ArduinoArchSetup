@@ -36,7 +36,7 @@ fi
 
 echo ""
 echo "  ╔═══════════════════════════════════════╗"
-echo "  ║     ⚡ Archduino Bootstrap ⚡          ║"
+echo "  ║       ⚡ Archduino Bootstrap ⚡         ║"
 echo "  ║  TUI Arduino Dev Environment Setup    ║"
 echo "  ╚═══════════════════════════════════════╝"
 echo ""
@@ -556,7 +556,7 @@ fi
 # ── Done ────────────────────────────────────────────────────────
 echo ""
 echo "  ╔═══════════════════════════════════════╗"
-echo "  ║     ⚡ Archduino Setup Complete ⚡     ║"
+echo "  ║      ⚡ Archduino Setup Complete ⚡     ║"
 echo "  ╚═══════════════════════════════════════╝"
 echo ""
 info "Start a new shell or run: source ~/.zshrc"
