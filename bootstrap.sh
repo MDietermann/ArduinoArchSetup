@@ -318,6 +318,8 @@ info "LazyVim plugins configured (Gruvbox + Arduino + LSP)"
 step "7/9 — Installing Arduino CLI + board cores"
 
 if ! command -v arduino-cli &>/dev/null; then
+  if $IS_ARCH then;
+    $PKG_INSTALL arduino-cli 
   curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sudo sh
 fi
 info "Arduino CLI installed: $(arduino-cli version 2>/dev/null | head -1)"
