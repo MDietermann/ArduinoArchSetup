@@ -6,7 +6,11 @@ step "7/9 — Installing Arduino CLI + board cores"
 if $IS_ARCH; then
   $PKG_INSTALL arduino-cli
 else
-  curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sudo sh
+  ACLI_VERSION=$(curl -ks "https://api.github.com/repos/arduino/arduino-cli/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+  curl -ksSLo /tmp/arduino-cli.tar.gz "https://downloads.arduino.cc/arduino-cli/arduino-cli_${ACLI_VERSION}_Linux_64bit.tar.gz"
+  tar xzf /tmp/arduino-cli.tar.gz -C /tmp arduino-cli
+  sudo install -m 755 /tmp/arduino-cli /usr/local/bin/arduino-cli
+  rm -f /tmp/arduino-cli /tmp/arduino-cli.tar.gz
 fi
 info "Arduino CLI installed: $(arduino-cli version 2>/dev/null | head -1)"
 
