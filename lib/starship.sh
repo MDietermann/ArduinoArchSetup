@@ -6,7 +6,10 @@ step "3/9 — Installing Starship"
 if $IS_ARCH; then
   $PKG_INSTALL starship
 else
-  curl -ksS https://starship.rs/install.sh | sh -s -- -y
+  curl -ksSLo /tmp/starship.tar.gz https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz
+  tar xzf /tmp/starship.tar.gz -C /tmp
+  sudo install -m 755 /tmp/starship /usr/local/bin/starship
+  rm -f /tmp/starship /tmp/starship.tar.gz
 fi
 info "Starship installed/updated"
 

@@ -4,11 +4,17 @@
 step "2/9 — Setting up Zsh"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" ||
-    RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -kfsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  RUNZSH=no KEEP_ZSHRC=yes CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended ||
+    RUNZSH=no KEEP_ZSHRC=yes CHSH=no sh -c "$(curl -kfsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
   info "Oh My Zsh installed"
 else
   info "Oh My Zsh already present"
+fi
+
+# Set zsh as default shell if it isn't already
+if [[ "$(basename "$SHELL")" != "zsh" ]]; then
+  sudo chsh -s "$(command -v zsh)" "$USER" 2>/dev/null || true
+  info "Default shell changed to zsh"
 fi
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
