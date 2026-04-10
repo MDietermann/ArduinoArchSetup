@@ -298,27 +298,25 @@ return {
 }
 ```
 
-Create `~/.config/nvim/lua/plugins/lsp.lua`:
+Create `~/.config/nvim/lsp/clangd.lua` (native Neovim 0.11+ LSP config):
 
 ```lua
 return {
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        clangd = {
-          cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-          },
-        },
-      },
-    },
+  cmd = {
+    "clangd",
+    "--background-index",
+    "--clang-tidy",
+    "--header-insertion=iwyu",
+    "--completion-style=detailed",
   },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "arduino" },
 }
+```
+
+Enable the server (e.g. in `init.lua` or a plugin file):
+
+```lua
+vim.lsp.enable("clangd")
 ```
 
 ---

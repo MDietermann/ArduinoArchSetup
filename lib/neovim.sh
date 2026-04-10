@@ -143,34 +143,11 @@ return {
 }
 LUA
 
-# ── LSP (clangd) ───────────────────────────────────────────────
-mkdir -p "$NVIM_CFG/lua/configs"
+# ── LSP (clangd) — native vim.lsp.config (Neovim 0.11+) ──────
+mkdir -p "$NVIM_CFG/lsp"
 
-cat >"$NVIM_CFG/lua/plugins/lspconfig.lua" <<'LUA'
+cat >"$NVIM_CFG/lsp/clangd.lua" <<'LUA'
 return {
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      require("nvchad.configs.lspconfig").defaults()
-      require "configs.lspconfig"
-    end,
-  },
-}
-LUA
-
-cat >"$NVIM_CFG/lua/configs/lspconfig.lua" <<'LUA'
-local configs = require "nvchad.configs.lspconfig"
-
-local on_attach = configs.on_attach
-local on_init = configs.on_init
-local capabilities = configs.capabilities
-
-local lspconfig = require "lspconfig"
-
-lspconfig.clangd.setup {
-  on_init = on_init,
-  on_attach = on_attach,
-  capabilities = capabilities,
   cmd = {
     "clangd",
     "--background-index",
@@ -178,8 +155,18 @@ lspconfig.clangd.setup {
     "--header-insertion=iwyu",
     "--completion-style=detailed",
   },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "arduino" },
 }
 LUA
+
+# Enable clangd via native API
+cat >"$NVIM_CFG/lua/plugins/lspconfig.lua" <<'LUA'
+vim.lsp.enable("clangd")
+return {}
+LUA
+
+# Clean up legacy configs/lspconfig.lua if present
+rm -f "$NVIM_CFG/lua/configs/lspconfig.lua"
 
 # ── Keymaps ─────────────────────────────────────────────────────
 cat >"$NVIM_CFG/lua/mappings.lua" <<'LUA'
