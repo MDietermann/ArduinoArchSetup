@@ -53,12 +53,17 @@ sudo -v || error "Failed to obtain sudo. Aborting."
 ( while kill -0 $$ 2>/dev/null; do sudo -n true; sleep 50; done ) &
 SUDO_KEEPALIVE_PID=$!
 
+INSTALL_SUCCESS=false
+
 cleanup() {
+  local exit_code=$?
   kill $SUDO_KEEPALIVE_PID 2>/dev/null
   if ! $VERBOSE && [[ -e /proc/self/fd/3 ]]; then
     exec 1>&3 2>&4 3>&- 4>&-
-    echo ""
-    echo -e "  ${RED}[✗]${NC} Installation failed. See log: $LOG_FILE"
+    if ! $INSTALL_SUCCESS; then
+      echo ""
+      echo -e "  ${RED}[✗]${NC} Installation failed (exit $exit_code). See log: $LOG_FILE"
+    fi
   fi
 }
 trap cleanup EXIT
@@ -83,6 +88,8 @@ source "$SCRIPT_DIR/lib/shell-config.sh"
 if ! $VERBOSE; then
   end_quiet_mode
 fi
+
+INSTALL_SUCCESS=true
 
 # ── Done ────────────────────────────────────────────────────────
 echo ""

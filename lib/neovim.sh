@@ -13,11 +13,11 @@ if command -v nvim &>/dev/null; then
 fi
 
 if $NVIM_NEEDED; then
-  curl -kLO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+  curl -kLo /tmp/nvim-linux-x86_64.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
   sudo rm -rf /opt/nvim-linux-x86_64
-  sudo tar -xzf nvim-linux-x86_64.tar.gz -C /opt
+  sudo tar -xzf /tmp/nvim-linux-x86_64.tar.gz -C /opt
   sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-  rm nvim-linux-x86_64.tar.gz
+  rm -f /tmp/nvim-linux-x86_64.tar.gz
   info "Neovim installed: $(nvim --version | head -1)"
 fi
 
@@ -99,6 +99,18 @@ LUA
 
 # ── LSP (clangd) ───────────────────────────────────────────────
 mkdir -p "$NVIM_CFG/lua/configs"
+
+cat >"$NVIM_CFG/lua/plugins/lspconfig.lua" <<'LUA'
+return {
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require("nvchad.configs.lspconfig").defaults()
+      require "configs.lspconfig"
+    end,
+  },
+}
+LUA
 
 cat >"$NVIM_CFG/lua/configs/lspconfig.lua" <<'LUA'
 local configs = require "nvchad.configs.lspconfig"

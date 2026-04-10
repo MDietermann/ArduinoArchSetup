@@ -78,6 +78,12 @@ backup_config() {
   info "Backed up $(basename "$src") → $BACKUP_DIR/"
 }
 
+# ── TLS workaround ───────────────────────────────────────────────
+# Many corporate/WSL environments have broken CA chains. Export this so
+# all git operations (clone, pull) skip certificate verification,
+# matching the -k flag used on all curl calls throughout the installer.
+export GIT_SSL_NO_VERIFY=1
+
 # ── Detect environment ──────────────────────────────────────────
 IS_WSL=false
 [[ -f /proc/version ]] && grep -qi microsoft /proc/version && IS_WSL=true
