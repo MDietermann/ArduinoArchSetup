@@ -172,7 +172,6 @@ cat >~/.config/archduino/templates/diagram-default.json <<'JSON'
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-uno", "id": "mcu", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
@@ -183,7 +182,8 @@ cat >~/.config/archduino/templates/diagram-default.json <<'JSON'
     ["r1:2", "mcu:GND.1", "black", []],
     ["mcu:4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "mcu:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
@@ -194,18 +194,20 @@ cat >~/.config/archduino/templates/diagram-esp32.json <<'JSON'
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
   ],
   "connections": [
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []],
     ["esp:2", "led1:A", "green", []],
     ["led1:C", "r1:1", "black", []],
     ["r1:2", "esp:GND.1", "black", []],
     ["esp:4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "esp:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
@@ -215,8 +217,7 @@ cat >~/.config/archduino/templates/diagram-esp32s3.json <<'JSON'
   "author": "Archduino",
   "editor": "wokwi",
   "parts": [
-    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": { "serialInterface": "USB_SERIAL_JTAG" } },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
@@ -227,7 +228,8 @@ cat >~/.config/archduino/templates/diagram-esp32s3.json <<'JSON'
     ["r1:2", "esp:GND.1", "black", []],
     ["esp:4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "esp:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
@@ -238,7 +240,6 @@ cat >~/.config/archduino/templates/diagram-uno.json <<'JSON'
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-uno", "id": "mcu", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
@@ -249,7 +250,8 @@ cat >~/.config/archduino/templates/diagram-uno.json <<'JSON'
     ["r1:2", "mcu:GND.1", "black", []],
     ["mcu:4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "mcu:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
@@ -260,7 +262,6 @@ cat >~/.config/archduino/templates/diagram-mega.json <<'JSON'
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-mega", "id": "mcu", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
@@ -271,7 +272,8 @@ cat >~/.config/archduino/templates/diagram-mega.json <<'JSON'
     ["r1:2", "mcu:GND.1", "black", []],
     ["mcu:4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "mcu:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
@@ -282,7 +284,6 @@ cat >~/.config/archduino/templates/diagram-nano.json <<'JSON'
   "editor": "wokwi",
   "parts": [
     { "type": "wokwi-arduino-nano", "id": "mcu", "top": 0, "left": 0 },
-    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
     { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
     { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
     { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
@@ -293,7 +294,8 @@ cat >~/.config/archduino/templates/diagram-nano.json <<'JSON'
     ["r1:2", "mcu:GND.1", "black", []],
     ["mcu:D4", "btn1:1.l", "blue", []],
     ["btn1:2.l", "mcu:GND.2", "black", []]
-  ]
+  ],
+  "serialMonitor": { "display": "auto" }
 }
 JSON
 
