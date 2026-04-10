@@ -107,10 +107,9 @@ info "Renode simulation helper created (arduino-sim)"
 if ! command -v wokwi-cli &>/dev/null; then
   info "Installing Wokwi CLI..."
   WOKWI_VERSION=$(curl -ks "https://api.github.com/repos/wokwi/wokwi-cli/releases/latest" | jq -r '.tag_name' | sed 's/^v//')
-  curl -ksSLo /tmp/wokwi-cli.tar.gz "https://github.com/wokwi/wokwi-cli/releases/download/v${WOKWI_VERSION}/wokwi-cli-linuxstatic-x64.tar.gz"
-  tar xzf /tmp/wokwi-cli.tar.gz -C /tmp wokwi-cli
+  curl -ksSLo /tmp/wokwi-cli "https://github.com/wokwi/wokwi-cli/releases/download/v${WOKWI_VERSION}/wokwi-cli-linuxstatic-x64"
   sudo install -m 755 /tmp/wokwi-cli /usr/local/bin/wokwi-cli
-  rm -f /tmp/wokwi-cli /tmp/wokwi-cli.tar.gz
+  rm -f /tmp/wokwi-cli
 else
   info "Wokwi CLI already installed"
 fi
