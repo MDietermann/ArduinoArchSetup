@@ -19,7 +19,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 echo ""
 echo "  ╔═══════════════════════════════════════╗"
-echo "  ║       ⚡ Archduino Bootstrap ⚡         ║"
+echo "  ║       ⚡ Archduino Bootstrap ⚡       ║"
 echo "  ║  TUI Arduino Dev Environment Setup    ║"
 echo "  ╚═══════════════════════════════════════╝"
 echo ""

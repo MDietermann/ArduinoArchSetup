@@ -20,4 +20,7 @@ else
   # fd is named differently on Ubuntu
   sudo apt install -y fd-find 2>/dev/null || true
 fi
+
+# Rebuild certificate store so Go/curl pick up system CAs
+sudo update-ca-certificates 2>/dev/null || true
 info "Base packages installed"
