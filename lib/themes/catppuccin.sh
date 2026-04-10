@@ -90,3 +90,38 @@ gui:
       - "#cdd6f4"
 YAML
 }
+
+write_yazi_config() {
+  cat >"$1" <<'TOML'
+[manager]
+cwd = { fg = "#f9e2af" }
+tab_active = { fg = "#1e1e2e", bg = "#f9e2af" }
+tab_inactive = { fg = "#bac2de", bg = "#313244" }
+border_symbol = "│"
+border_style = { fg = "#585b70" }
+count_copied = { fg = "#1e1e2e", bg = "#a6e3a1" }
+count_cut = { fg = "#1e1e2e", bg = "#f38ba8" }
+count_selected = { fg = "#1e1e2e", bg = "#f9e2af" }
+
+[status]
+separator_open = ""
+separator_close = ""
+mode_normal = { fg = "#1e1e2e", bg = "#a6e3a1", bold = true }
+mode_select = { fg = "#1e1e2e", bg = "#f9e2af", bold = true }
+mode_unset = { fg = "#1e1e2e", bg = "#f38ba8", bold = true }
+progress_label = { fg = "#cdd6f4", bold = true }
+progress_normal = { fg = "#89b4fa", bg = "#313244" }
+progress_error = { fg = "#f38ba8", bg = "#313244" }
+
+[input]
+border = { fg = "#f9e2af" }
+title = {}
+value = {}
+selected = { reversed = true }
+
+[select]
+border = { fg = "#f9e2af" }
+active = { fg = "#a6e3a1", bold = true }
+inactive = {}
+TOML
+}

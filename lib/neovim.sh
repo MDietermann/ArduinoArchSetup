@@ -1,7 +1,7 @@
 #!/bin/bash
 # Steps 5+6: Neovim + NvChad
 
-step "5/9 — Installing Neovim (latest)"
+step "6/11 — Installing Neovim (latest)"
 
 NVIM_NEEDED=true
 if command -v nvim &>/dev/null; then
@@ -21,7 +21,7 @@ if $NVIM_NEEDED; then
   info "Neovim installed: $(nvim --version | head -1)"
 fi
 
-step "6/9 — Setting up NvChad"
+step "7/11 — Setting up NvChad"
 
 NVIM_CFG="$HOME/.config/nvim"
 NVCHAD_FRESH=false

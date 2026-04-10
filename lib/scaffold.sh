@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 9: Project scaffolding tool + templates
 
-step "9/9 — Creating project scaffolding tool"
+step "11/11 — Creating project scaffolding tool"
 
 mkdir -p ~/.local/bin ~/.config/archduino/templates
 
@@ -214,6 +214,11 @@ info "Zellij updated"
 # Lazygit
 write_lazygit_config ~/.config/lazygit/config.yml
 info "Lazygit updated"
+
+# Yazi
+mkdir -p ~/.config/yazi
+write_yazi_config ~/.config/yazi/theme.toml
+info "Yazi updated"
 
 # NvChad
 NVIM_CFG="$HOME/.config/nvim"

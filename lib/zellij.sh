@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 4: Zellij terminal multiplexer
 
-step "4/9 — Installing Zellij"
+step "5/11 — Installing Zellij"
 
 if $IS_ARCH; then
   $PKG_INSTALL zellij

@@ -33,12 +33,14 @@ The Idea was a Development Environment runnable by almost everything. No GUI nee
 | **Shell** | [Zsh](https://www.zsh.org) + [Oh My Zsh](https://ohmyz.sh) | Autosuggestions, syntax highlighting, smart completions |
 | **Prompt** | [Starship](https://starship.rs) | Fast, minimal, git-aware prompt |
 | **Git** | [Lazygit](https://github.com/jesseduffield/lazygit) | Beautiful terminal UI for git |
+| **File Manager** | [Yazi](https://yazi-rs.github.io) | Blazing fast terminal file manager with image preview |
 | **Serial** | [tio](https://github.com/tio/tio) | Simple serial device I/O |
+| **Font** | [JetBrainsMono Nerd Font](https://www.nerdfonts.com) | Icons and ligatures for all TUI tools |
 | **Theme** | 5 colorschemes | Consistent look across every tool (see below) |
 
 ### Colorschemes
 
-The installer lets you pick a theme that is applied **consistently** across Neovim, Starship, Zellij, and Lazygit:
+The installer lets you pick a theme that is applied **consistently** across Neovim, Starship, Zellij, Lazygit, and Yazi:
 
 | # | Theme | Style |
 |---|---|---|
@@ -54,7 +56,7 @@ You can **switch themes at any time** after installation:
 archduino-theme    # or just: theme
 ```
 
-This updates Starship, Zellij, Lazygit, and NvChad in one step.
+This updates Starship, Zellij, Lazygit, Yazi, and NvChad in one step.
 
 ### Supported Boards (out of the box)
 
@@ -84,7 +86,7 @@ The installer will:
 2. Let you pick your **colorscheme** (applied to all tools)
 3. Let you choose between **progress bar** or **verbose** output
 4. Ask for your sudo password **once** (cached for the entire install)
-5. Run through all 9 setup steps automatically
+5. Run through all 11 setup steps automatically
 
 After it finishes, start a new shell or run `source ~/.zshrc`.
 
@@ -105,10 +107,12 @@ ArduinoArch/
     │   ├── nord.sh         # Nord configs
     │   └── dracula.sh      # Dracula configs
     ├── packages.sh         # Base packages (build tools, ripgrep, fd, bat, etc.)
+    ├── fonts.sh            # JetBrainsMono Nerd Font installation
     ├── zsh.sh              # Oh My Zsh + plugins
     ├── starship.sh         # Starship prompt config
     ├── zellij.sh           # Zellij + config + Arduino workspace layout
     ├── neovim.sh           # Neovim + NvChad + plugin configs (Arduino, LSP)
+    ├── yazi.sh             # Yazi file manager + themed config
     ├── arduino.sh          # Arduino CLI + AVR/ESP32/ESP8266 cores + common libraries
     ├── git.sh              # Lazygit config
     ├── scaffold.sh         # `arduino-new` scaffolding tool + board templates
@@ -191,6 +195,7 @@ All keybindings are under `<leader>a`:
 | `acb` | `arduino-cli board list` |
 | `lg` | `lazygit` |
 | `v` | `nvim` |
+| `y` | `yazi` (file manager) |
 | `theme` | `archduino-theme` (switch colorscheme) |
 
 ---

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 2: Zsh + Oh My Zsh + plugins
 
-step "2/9 — Setting up Zsh"
+step "3/11 — Setting up Zsh"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   RUNZSH=no KEEP_ZSHRC=yes CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended ||

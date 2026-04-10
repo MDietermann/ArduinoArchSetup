@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 1: Base packages
 
-step "1/9 — Installing base packages"
+step "1/11 — Installing base packages"
 
 if $IS_ARCH; then
   sudo pacman -Syu --noconfirm

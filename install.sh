@@ -75,10 +75,12 @@ fi
 
 # ── Run install steps ───────────────────────────────────────────
 source "$SCRIPT_DIR/lib/packages.sh"
+source "$SCRIPT_DIR/lib/fonts.sh"
 source "$SCRIPT_DIR/lib/zsh.sh"
 source "$SCRIPT_DIR/lib/starship.sh"
 source "$SCRIPT_DIR/lib/zellij.sh"
 source "$SCRIPT_DIR/lib/neovim.sh"
+source "$SCRIPT_DIR/lib/yazi.sh"
 source "$SCRIPT_DIR/lib/arduino.sh"
 source "$SCRIPT_DIR/lib/git.sh"
 source "$SCRIPT_DIR/lib/scaffold.sh"
