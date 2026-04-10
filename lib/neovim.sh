@@ -95,9 +95,8 @@ if $NVCHAD_FRESH; then
 fi
 
 # ── Strip starter's nvim-lspconfig block (we use native vim.lsp) ─
-# Also remove configs/ dir — we don't use the legacy lspconfig setup
 sed -i '/neovim\/nvim-lspconfig/,/},/d' "$NVIM_CFG/lua/plugins/init.lua"
-rm -f "$NVIM_CFG/lua/configs/lspconfig.lua" "$NVIM_CFG/lua/configs/conform.lua"
+rm -f "$NVIM_CFG/lua/configs/lspconfig.lua"
 
 # ── Restore migrated plugins ─────────────────────────────────────
 if [[ -d "$MIGRATED_PLUGINS_DIR" ]] && ls "$MIGRATED_PLUGINS_DIR"/*.lua &>/dev/null; then
