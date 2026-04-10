@@ -1,7 +1,7 @@
 #!/bin/bash
 # Steps 5+6: Neovim + NvChad
 
-step "6/11 — Installing Neovim (latest)"
+step "6/12 — Installing Neovim (latest)"
 
 NVIM_NEEDED=true
 if command -v nvim &>/dev/null; then
@@ -21,7 +21,7 @@ if $NVIM_NEEDED; then
   info "Neovim installed: $(nvim --version | head -1)"
 fi
 
-step "7/11 — Setting up NvChad"
+step "7/12 — Setting up NvChad"
 
 NVIM_CFG="$HOME/.config/nvim"
 NVCHAD_FRESH=false
@@ -29,7 +29,7 @@ MIGRATED_PLUGINS_DIR="/tmp/archduino-migrated-plugins"
 rm -rf "$MIGRATED_PLUGINS_DIR"
 
 # Files managed by Archduino or LazyVim-specific — skip during migration
-SKIP_PLUGINS="gruvbox.lua|theme.lua|lsp.lua|arduino.lua|lspconfig.lua"
+SKIP_PLUGINS="gruvbox.lua|theme.lua|lsp.lua|arduino.lua|lspconfig.lua|dap.lua"
 
 # ── Detect existing config ──────────────────────────────────────
 if [[ -d "$NVIM_CFG/lua" ]]; then
@@ -93,6 +93,11 @@ if $NVCHAD_FRESH; then
   rm -rf "$NVIM_CFG/.git"
   info "NvChad starter cloned"
 fi
+
+# ── Strip starter's nvim-lspconfig block (we use native vim.lsp) ─
+# Also remove configs/ dir — we don't use the legacy lspconfig setup
+sed -i '/neovim\/nvim-lspconfig/,/},/d' "$NVIM_CFG/lua/plugins/init.lua"
+rm -f "$NVIM_CFG/lua/configs/lspconfig.lua" "$NVIM_CFG/lua/configs/conform.lua"
 
 # ── Restore migrated plugins ─────────────────────────────────────
 if [[ -d "$MIGRATED_PLUGINS_DIR" ]] && ls "$MIGRATED_PLUGINS_DIR"/*.lua &>/dev/null; then
@@ -165,8 +170,67 @@ vim.lsp.enable("clangd")
 return {}
 LUA
 
-# Clean up legacy configs/lspconfig.lua if present
-rm -f "$NVIM_CFG/lua/configs/lspconfig.lua"
+# ── DAP (debug adapter) — for Renode GDB remote debugging ──────
+cat >"$NVIM_CFG/lua/plugins/dap.lua" <<'LUA'
+return {
+  {
+    "mfussenegger/nvim-dap",
+    keys = { "<leader>d" },
+    config = function()
+      local dap = require("dap")
+
+      -- GDB remote adapter (connects to Renode's GDB server)
+      dap.adapters.gdb_remote = {
+        type = "executable",
+        command = vim.fn.executable("arm-none-eabi-gdb") == 1
+          and "arm-none-eabi-gdb"
+          or "gdb-multiarch",
+        args = { "-i", "dap" },
+      }
+
+      -- Default debug configurations for Arduino/embedded
+      dap.configurations.c = {
+        {
+          name = "Attach to Renode (GDB :3333)",
+          type = "gdb_remote",
+          request = "attach",
+          target = "localhost:3333",
+          cwd = "${workspaceFolder}",
+          program = function()
+            return vim.fn.input("ELF path: ", vim.fn.getcwd() .. "/build/", "file")
+          end,
+        },
+      }
+      dap.configurations.cpp = dap.configurations.c
+      dap.configurations.arduino = dap.configurations.c
+
+      -- Breakpoint signs
+      vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DiagnosticError" })
+      vim.fn.sign_define("DapStopped", { text = "▶", texthl = "DiagnosticOk", linehl = "DiffAdd" })
+    end,
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    keys = { "<leader>du" },
+    config = function()
+      local dapui = require("dapui")
+      dapui.setup()
+
+      -- Auto open/close UI on debug sessions
+      local dap = require("dap")
+      dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+      dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+      dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+    end,
+  },
+  {
+    "nvim-neotest/nvim-nio",
+    lazy = true,
+  },
+}
+LUA
+
 
 # ── Keymaps ─────────────────────────────────────────────────────
 cat >"$NVIM_CFG/lua/mappings.lua" <<'LUA'
@@ -180,6 +244,15 @@ map("n", "<leader>av", "<cmd>ArduinoVerify<cr>", { desc = "Arduino Verify (compi
 map("n", "<leader>au", "<cmd>ArduinoUpload<cr>", { desc = "Arduino Upload" })
 map("n", "<leader>as", "<cmd>ArduinoSerial<cr>", { desc = "Arduino Serial Monitor" })
 map("n", "<leader>ai", "<cmd>ArduinoInfo<cr>", { desc = "Arduino Board Info" })
+
+-- Debug (DAP)
+map("n", "<leader>ds", function() require("dap").continue() end, { desc = "Debug Start/Continue" })
+map("n", "<leader>db", function() require("dap").toggle_breakpoint() end, { desc = "Debug Toggle Breakpoint" })
+map("n", "<leader>dn", function() require("dap").step_over() end, { desc = "Debug Step Over" })
+map("n", "<leader>di", function() require("dap").step_into() end, { desc = "Debug Step Into" })
+map("n", "<leader>do", function() require("dap").step_out() end, { desc = "Debug Step Out" })
+map("n", "<leader>dx", function() require("dap").terminate() end, { desc = "Debug Terminate" })
+map("n", "<leader>du", function() require("dapui").toggle() end, { desc = "Debug UI Toggle" })
 LUA
 
-info "NvChad configured ($THEME_DISPLAY_NAME + Arduino + LSP)"
+info "NvChad configured ($THEME_DISPLAY_NAME + Arduino + LSP + DAP)"

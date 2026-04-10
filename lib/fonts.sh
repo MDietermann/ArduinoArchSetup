@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 2: Nerd Font installation
 
-step "2/11 — Installing Nerd Font"
+step "2/12 — Installing Nerd Font"
 
 FONT_DIR="$HOME/.local/share/fonts/NerdFonts"
 FONT_NAME="JetBrainsMono"

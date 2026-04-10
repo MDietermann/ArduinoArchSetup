@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 8: Git + Lazygit
 
-step "10/11 — Setting up Git + Lazygit"
+step "11/12 — Setting up Git + Lazygit"
 
 if $IS_ARCH; then
   $PKG_INSTALL lazygit

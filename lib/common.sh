@@ -13,7 +13,7 @@ NC='\033[0m'
 VERBOSE=true
 LOG_FILE="/tmp/archduino-install.log"
 CURRENT_STEP=0
-TOTAL_STEPS=12
+TOTAL_STEPS=13
 
 info() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
@@ -39,7 +39,7 @@ draw_progress() {
 }
 
 begin_quiet_mode() {
-  $IS_WSL && TOTAL_STEPS=13
+  $IS_WSL && TOTAL_STEPS=14
   : >"$LOG_FILE"
 
   # Save real terminal to fd 3/4, redirect everything else to log
@@ -82,9 +82,12 @@ BACKUP_DIR="$HOME/.config/archduino/backups/$(date +%Y%m%d_%H%M%S)"
 backup_config() {
   local src="$1"
   [[ ! -e "$src" ]] && return 0
-  mkdir -p "$BACKUP_DIR"
-  cp -a "$src" "$BACKUP_DIR/"
-  info "Backed up $(basename "$src") → $BACKUP_DIR/"
+  # Use parent path to avoid collisions when different sources share a basename
+  # e.g. ~/.config/nvim and ~/.local/share/nvim both have basename "nvim"
+  local dest="$BACKUP_DIR${src#"$HOME"}"
+  mkdir -p "$(dirname "$dest")"
+  cp -a "$src" "$dest"
+  info "Backed up ${src/#"$HOME"/\~} → ${dest/#"$HOME"/\~}"
 }
 
 # ── TLS workaround ───────────────────────────────────────────────

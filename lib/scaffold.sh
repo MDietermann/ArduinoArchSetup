@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 9: Project scaffolding tool + templates
 
-step "11/11 — Creating project scaffolding tool"
+step "12/12 — Creating project scaffolding tool"
 
 mkdir -p ~/.local/bin ~/.config/archduino/templates
 

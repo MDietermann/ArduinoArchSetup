@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 3: Starship prompt
 
-step "4/11 — Installing Starship"
+step "4/12 — Installing Starship"
 
 if $IS_ARCH; then
   $PKG_INSTALL starship

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 7: Arduino CLI + board cores
 
-step "9/11 — Installing Arduino CLI + board cores"
+step "9/12 — Installing Arduino CLI + board cores"
 
 if $IS_ARCH; then
   $PKG_INSTALL arduino-cli

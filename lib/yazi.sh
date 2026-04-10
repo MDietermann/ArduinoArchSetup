@@ -1,7 +1,7 @@
 #!/bin/bash
 # Step 8: Yazi file manager
 
-step "8/11 — Installing Yazi"
+step "8/12 — Installing Yazi"
 
 if $IS_ARCH; then
   $PKG_INSTALL yazi ffmpegthumbnailer p7zip poppler
