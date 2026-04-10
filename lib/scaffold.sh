@@ -67,9 +67,38 @@ build/
 *.bin
 EOF
 
+# ── Wokwi simulation config ─────────────────────────────────────
+# Determine firmware path format based on board family
+case "$BOARD" in
+  esp32|esp32s3|esp8266)
+    WOKWI_FW="build/$PROJECT.ino.merged.bin"
+    ;;
+  *)
+    WOKWI_FW="build/$PROJECT.ino.hex"
+    ;;
+esac
+
+cat > wokwi.toml <<EOF
+[wokwi]
+version = 1
+firmware = "$WOKWI_FW"
+elf = "build/$PROJECT.ino.elf"
+EOF
+
+# Board-specific diagram with button + LED on breadboard
+DIAGRAM_TEMPLATE="$TEMPLATE_DIR/diagram-$BOARD.json"
+if [[ -f "$DIAGRAM_TEMPLATE" ]]; then
+  cp "$DIAGRAM_TEMPLATE" diagram.json
+else
+  cp "$TEMPLATE_DIR/diagram-default.json" diagram.json
+fi
+
 git init -q
 echo "✓ Created '$PROJECT' for $BOARD ($FQBN)"
 echo "  cd $PROJECT && nvim $PROJECT.ino"
+echo ""
+echo "  Simulate:  arduino-cli compile --fqbn $FQBN --output-dir build ."
+echo "             wokwi-cli ."
 SCAFFOLD
 chmod +x ~/.local/bin/arduino-new
 
@@ -135,6 +164,139 @@ void loop() {
   delay(1000);
 }
 INO
+# ── Wokwi diagram templates ──────────────────────────────────────
+cat >~/.config/archduino/templates/diagram-default.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "mcu", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["mcu:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "mcu:GND.1", "black", []],
+    ["mcu:4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "mcu:GND.2", "black", []]
+  ]
+}
+JSON
+
+cat >~/.config/archduino/templates/diagram-esp32.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["esp:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "esp:GND.1", "black", []],
+    ["esp:4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "esp:GND.2", "black", []]
+  ]
+}
+JSON
+
+cat >~/.config/archduino/templates/diagram-esp32s3.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["esp:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "esp:GND.1", "black", []],
+    ["esp:4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "esp:GND.2", "black", []]
+  ]
+}
+JSON
+
+cat >~/.config/archduino/templates/diagram-uno.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "mcu", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["mcu:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "mcu:GND.1", "black", []],
+    ["mcu:4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "mcu:GND.2", "black", []]
+  ]
+}
+JSON
+
+cat >~/.config/archduino/templates/diagram-mega.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-mega", "id": "mcu", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["mcu:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "mcu:GND.1", "black", []],
+    ["mcu:4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "mcu:GND.2", "black", []]
+  ]
+}
+JSON
+
+cat >~/.config/archduino/templates/diagram-nano.json <<'JSON'
+{
+  "version": 1,
+  "author": "Archduino",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "mcu", "top": 0, "left": 0 },
+    { "type": "wokwi-breadboard-half", "id": "bb1", "top": 200, "left": -80 },
+    { "type": "wokwi-led", "id": "led1", "top": 110, "left": 50, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 150, "left": 30, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 110, "left": 150, "attrs": { "color": "blue" } }
+  ],
+  "connections": [
+    ["mcu:D2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "mcu:GND.1", "black", []],
+    ["mcu:D4", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "mcu:GND.2", "black", []]
+  ]
+}
+JSON
+
 # ── Install theme files + theme switcher ─────────────────────────
 mkdir -p ~/.config/archduino/themes
 cp "$SCRIPT_DIR/lib/themes/"*.sh ~/.config/archduino/themes/

@@ -243,6 +243,7 @@ map("n", "<leader>av", "<cmd>ArduinoVerify<cr>", { desc = "Arduino Verify (compi
 map("n", "<leader>au", "<cmd>ArduinoUpload<cr>", { desc = "Arduino Upload" })
 map("n", "<leader>as", "<cmd>ArduinoSerial<cr>", { desc = "Arduino Serial Monitor" })
 map("n", "<leader>ai", "<cmd>ArduinoInfo<cr>", { desc = "Arduino Board Info" })
+map("n", "<leader>aw", "<cmd>!wokwi-cli .<cr>", { desc = "Arduino Wokwi Simulate" })
 
 -- Debug (DAP)
 map("n", "<leader>ds", function() require("dap").continue() end, { desc = "Debug Start/Continue" })

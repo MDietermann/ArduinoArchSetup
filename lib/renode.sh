@@ -102,3 +102,16 @@ SIMSCRIPT
 chmod +x ~/.local/bin/arduino-sim
 
 info "Renode simulation helper created (arduino-sim)"
+
+# ── Wokwi CLI (visual breadboard simulation) ────────────────────
+if ! command -v wokwi-cli &>/dev/null; then
+  info "Installing Wokwi CLI..."
+  WOKWI_VERSION=$(curl -ks "https://api.github.com/repos/wokwi/wokwi-cli/releases/latest" | jq -r '.tag_name' | sed 's/^v//')
+  curl -ksSLo /tmp/wokwi-cli.tar.gz "https://github.com/wokwi/wokwi-cli/releases/download/v${WOKWI_VERSION}/wokwi-cli-linuxstatic-x64.tar.gz"
+  tar xzf /tmp/wokwi-cli.tar.gz -C /tmp wokwi-cli
+  sudo install -m 755 /tmp/wokwi-cli /usr/local/bin/wokwi-cli
+  rm -f /tmp/wokwi-cli /tmp/wokwi-cli.tar.gz
+else
+  info "Wokwi CLI already installed"
+fi
+info "Wokwi CLI installed (set WOKWI_CLI_TOKEN to enable — get one at https://wokwi.com/dashboard/ci)"
