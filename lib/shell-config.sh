@@ -26,6 +26,7 @@ alias acm="arduino-cli monitor"
 alias acb="arduino-cli board list"
 alias lg="lazygit"
 alias v="nvim"
+alias theme="archduino-theme"
 # ── END ARCHDUINO ───────────────────────────────────────────────'
 
 if grep -q "ARCHDUINO CONFIG" ~/.zshrc 2>/dev/null; then

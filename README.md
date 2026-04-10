@@ -48,6 +48,14 @@ The installer lets you pick a theme that is applied **consistently** across Neov
 | 4 | **Nord** | Arctic, muted blue-grey |
 | 5 | **Dracula** | High-contrast purple and green |
 
+You can **switch themes at any time** after installation:
+
+```bash
+archduino-theme    # or just: theme
+```
+
+This updates Starship, Zellij, Lazygit, and NvChad in one step.
+
 ### Supported Boards (out of the box)
 
 | Board | FQBN |
@@ -183,6 +191,7 @@ All keybindings are under `<leader>a`:
 | `acb` | `arduino-cli board list` |
 | `lg` | `lazygit` |
 | `v` | `nvim` |
+| `theme` | `archduino-theme` (switch colorscheme) |
 
 ---
 
