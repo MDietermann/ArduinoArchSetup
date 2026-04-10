@@ -90,10 +90,18 @@ echo "  ╔═══════════════════════
 echo "  ║      ⚡ Archduino Setup Complete ⚡     ║"
 echo "  ╚═══════════════════════════════════════╝"
 echo ""
-info "Start a new shell or run: source ~/.zshrc"
-info "Quick start:"
+info "Quick start (after reboot):"
 echo "    arduino-new my-project uno    # scaffold a project"
 echo "    adev                          # launch Arduino workspace"
 echo "    <leader>av                    # compile in Neovim"
 echo "    <leader>au                    # upload in Neovim"
 echo ""
+warn "A reboot is recommended to apply all changes (shell, groups, PATH)."
+echo ""
+read -rp "  Reboot now? [y/N]: " reboot_choice
+if [[ "$reboot_choice" =~ ^[Yy]$ ]]; then
+  info "Rebooting..."
+  sudo reboot
+else
+  info "Reboot skipped. Remember to reboot before starting."
+fi
