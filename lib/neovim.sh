@@ -25,6 +25,11 @@ step "6/9 — Setting up NvChad"
 
 NVIM_CFG="$HOME/.config/nvim"
 NVCHAD_FRESH=false
+MIGRATED_PLUGINS_DIR="/tmp/archduino-migrated-plugins"
+rm -rf "$MIGRATED_PLUGINS_DIR"
+
+# Files managed by Archduino or LazyVim-specific — skip during migration
+SKIP_PLUGINS="gruvbox.lua|theme.lua|lsp.lua|arduino.lua|lspconfig.lua"
 
 # ── Detect existing config ──────────────────────────────────────
 if [[ -d "$NVIM_CFG/lua" ]]; then
@@ -32,8 +37,34 @@ if [[ -d "$NVIM_CFG/lua" ]]; then
     # NvChad detected — update in place
     info "Existing NvChad config detected, updating..."
   elif grep -rq "LazyVim" "$NVIM_CFG/lua/" 2>/dev/null || [[ -f "$NVIM_CFG/lazyvim.json" ]]; then
-    # LazyVim detected — migrate to NvChad
+    # LazyVim detected — salvage user plugins, then migrate
     warn "LazyVim config detected, migrating to NvChad..."
+
+    # Salvage user plugin files that aren't managed by us or LazyVim-specific
+    if [[ -d "$NVIM_CFG/lua/plugins" ]]; then
+      mkdir -p "$MIGRATED_PLUGINS_DIR"
+      for pfile in "$NVIM_CFG/lua/plugins/"*.lua; do
+        [[ ! -f "$pfile" ]] && continue
+        fname="$(basename "$pfile")"
+
+        # Skip our managed files
+        if [[ "$fname" =~ ^($SKIP_PLUGINS)$ ]]; then
+          continue
+        fi
+
+        # Skip files that are purely LazyVim-specific (extras imports, LazyVim core)
+        if grep -q 'import.*=.*"lazyvim' "$pfile" 2>/dev/null; then
+          continue
+        fi
+        if grep -q '"LazyVim/LazyVim"' "$pfile" 2>/dev/null && [[ $(wc -l < "$pfile") -lt 10 ]]; then
+          continue
+        fi
+
+        cp "$pfile" "$MIGRATED_PLUGINS_DIR/"
+        info "Salvaged plugin: $fname"
+      done
+    fi
+
     for d in "$NVIM_CFG" ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
       if [[ -d "$d" ]]; then
         backup_config "$d"
@@ -61,6 +92,21 @@ if $NVCHAD_FRESH; then
   git clone https://github.com/NvChad/starter "$NVIM_CFG"
   rm -rf "$NVIM_CFG/.git"
   info "NvChad starter cloned"
+fi
+
+# ── Restore migrated plugins ─────────────────────────────────────
+if [[ -d "$MIGRATED_PLUGINS_DIR" ]] && ls "$MIGRATED_PLUGINS_DIR"/*.lua &>/dev/null; then
+  mkdir -p "$NVIM_CFG/lua/plugins"
+  count=0
+  for pfile in "$MIGRATED_PLUGINS_DIR"/*.lua; do
+    # Strip any LazyVim-specific lines from the plugin spec
+    # (e.g. LazyVim opts overrides) but keep the rest intact
+    sed '/LazyVim\/LazyVim/d; /lazyvim\./d' "$pfile" > "$NVIM_CFG/lua/plugins/$(basename "$pfile")"
+    count=$((count + 1))
+  done
+  info "Migrated $count plugin file(s) from LazyVim to NvChad"
+  warn "Review migrated plugins in ~/.config/nvim/lua/plugins/ for compatibility"
+  rm -rf "$MIGRATED_PLUGINS_DIR"
 fi
 
 # ── Clear NvChad theme cache so the new theme takes effect ──────
