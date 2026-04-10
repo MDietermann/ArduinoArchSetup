@@ -3,9 +3,14 @@
 # Archduino Install — TUI Arduino Development Environment
 # Works on both native Arch Linux and Arch/Ubuntu WSL2
 #
-# Usage: curl -kL <url> | bash
-#    or: chmod +x install.sh && ./install.sh
+# Usage: chmod +x install.sh && ./install.sh
+#    or: bash install.sh
 #
+
+# Re-exec with bash if invoked via sh/dash
+if [ -z "$BASH_VERSION" ]; then
+  exec bash "$0" "$@"
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

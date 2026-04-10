@@ -67,6 +67,17 @@ end_quiet_mode() {
   echo ""
 }
 
+# ── Config backup helper ─────────────────────────────────────────
+BACKUP_DIR="$HOME/.config/archduino/backups/$(date +%Y%m%d_%H%M%S)"
+
+backup_config() {
+  local src="$1"
+  [[ ! -e "$src" ]] && return 0
+  mkdir -p "$BACKUP_DIR"
+  cp -a "$src" "$BACKUP_DIR/"
+  info "Backed up $(basename "$src") → $BACKUP_DIR/"
+}
+
 # ── Detect environment ──────────────────────────────────────────
 IS_WSL=false
 [[ -f /proc/version ]] && grep -qi microsoft /proc/version && IS_WSL=true

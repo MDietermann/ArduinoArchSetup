@@ -3,17 +3,16 @@
 
 step "4/9 — Installing Zellij"
 
-if ! command -v zellij &>/dev/null; then
-  if $IS_ARCH; then
-    $PKG_INSTALL zellij
-  else
-    curl -kL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C /tmp
-    sudo mv /tmp/zellij /usr/local/bin/
-  fi
+if $IS_ARCH; then
+  $PKG_INSTALL zellij
+else
+  curl -kL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C /tmp
+  sudo mv /tmp/zellij /usr/local/bin/
 fi
-info "Zellij installed"
+info "Zellij installed/updated"
 
 mkdir -p ~/.config/zellij/layouts
+backup_config ~/.config/zellij/config.kdl
 write_zellij_config ~/.config/zellij/config.kdl
 
 cat >~/.config/zellij/layouts/arduino.kdl <<'LAYOUT'

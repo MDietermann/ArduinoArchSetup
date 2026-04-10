@@ -3,11 +3,7 @@
 
 step "Finalizing shell config"
 
-# Append archduino block to .zshrc if not already present
-if ! grep -q "ARCHDUINO" ~/.zshrc 2>/dev/null; then
-  cat >>~/.zshrc <<'ZSHRC'
-
-# ── ARCHDUINO CONFIG ────────────────────────────────────────────
+ZSHRC_BLOCK='# ── ARCHDUINO CONFIG ────────────────────────────────────────────
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 export PATH="$HOME/.local/bin:$PATH"
@@ -30,11 +26,21 @@ alias acm="arduino-cli monitor"
 alias acb="arduino-cli board list"
 alias lg="lazygit"
 alias v="nvim"
-# ── END ARCHDUINO ───────────────────────────────────────────────
-ZSHRC
-  info "Shell config updated"
+# ── END ARCHDUINO ───────────────────────────────────────────────'
+
+if grep -q "ARCHDUINO CONFIG" ~/.zshrc 2>/dev/null; then
+  # Update: replace existing block
+  backup_config ~/.zshrc
+  # Remove old block and write new one
+  sed -i '/^# ── ARCHDUINO CONFIG/,/^# ── END ARCHDUINO/d' ~/.zshrc
+  echo "" >> ~/.zshrc
+  echo "$ZSHRC_BLOCK" >> ~/.zshrc
+  info "Shell config updated (replaced Archduino block)"
 else
-  info "Shell config already contains Archduino block"
+  # Fresh install: append block
+  echo "" >> ~/.zshrc
+  echo "$ZSHRC_BLOCK" >> ~/.zshrc
+  info "Shell config updated"
 fi
 
 # ── WSL2 extras ─────────────────────────────────────────────────

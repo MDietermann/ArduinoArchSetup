@@ -13,10 +13,12 @@ fi
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-[[ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] &&
-  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+  if [[ ! -d "$ZSH_CUSTOM/plugins/$plugin" ]]; then
+    git clone "https://github.com/zsh-users/$plugin" "$ZSH_CUSTOM/plugins/$plugin"
+  else
+    git -C "$ZSH_CUSTOM/plugins/$plugin" pull --quiet 2>/dev/null || true
+  fi
+done
 
-[[ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] &&
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
-
-info "Zsh plugins installed"
+info "Zsh plugins installed/updated"

@@ -3,12 +3,10 @@
 
 step "7/9 — Installing Arduino CLI + board cores"
 
-if ! command -v arduino-cli &>/dev/null; then
-  if $IS_ARCH; then
-    $PKG_INSTALL arduino-cli
-  else
-    curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sudo sh
-  fi
+if $IS_ARCH; then
+  $PKG_INSTALL arduino-cli
+else
+  curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sudo sh
 fi
 info "Arduino CLI installed: $(arduino-cli version 2>/dev/null | head -1)"
 
@@ -22,15 +20,19 @@ arduino-cli config add board_manager.additional_urls \
 
 arduino-cli core update-index
 
-info "Installing AVR core..."
+info "Installing/updating AVR core..."
 arduino-cli core install arduino:avr
 
-info "Installing ESP32 core..."
+info "Installing/updating ESP32 core..."
 arduino-cli core install esp32:esp32
 
-info "Installing ESP8266 core..."
+info "Installing/updating ESP8266 core..."
 arduino-cli core install esp8266:esp8266
 
-# Common libs
+# Upgrade all installed cores to latest
+arduino-cli core upgrade
+
+# Common libs (install is idempotent, upgrade updates them)
 arduino-cli lib install "Servo" "ArduinoJson" "Adafruit Unified Sensor" "DHT sensor library" 2>/dev/null || true
-info "Board cores & libraries installed"
+arduino-cli lib upgrade 2>/dev/null || true
+info "Board cores & libraries installed/updated"

@@ -23,21 +23,54 @@ fi
 
 step "6/9 — Setting up NvChad"
 
-if [[ ! -d "$HOME/.config/nvim/lua" ]]; then
-  for d in ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
-    [[ -d "$d" ]] && mv "$d" "${d}.bak.$(date +%s)"
-  done
-  git clone https://github.com/NvChad/starter ~/.config/nvim
-  rm -rf ~/.config/nvim/.git
-  info "NvChad starter cloned"
+NVIM_CFG="$HOME/.config/nvim"
+NVCHAD_FRESH=false
+
+# ── Detect existing config ──────────────────────────────────────
+if [[ -d "$NVIM_CFG/lua" ]]; then
+  if [[ -f "$NVIM_CFG/lua/chadrc.lua" ]]; then
+    # NvChad detected — update in place
+    info "Existing NvChad config detected, updating..."
+  elif grep -rq "LazyVim" "$NVIM_CFG/lua/" 2>/dev/null || [[ -f "$NVIM_CFG/lazyvim.json" ]]; then
+    # LazyVim detected — migrate to NvChad
+    warn "LazyVim config detected, migrating to NvChad..."
+    for d in "$NVIM_CFG" ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
+      if [[ -d "$d" ]]; then
+        backup_config "$d"
+        rm -rf "$d"
+      fi
+    done
+    NVCHAD_FRESH=true
+  else
+    # Unknown config — back up and install fresh
+    warn "Unknown Neovim config detected, backing up..."
+    for d in "$NVIM_CFG" ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
+      if [[ -d "$d" ]]; then
+        backup_config "$d"
+        rm -rf "$d"
+      fi
+    done
+    NVCHAD_FRESH=true
+  fi
 else
-  info "Neovim config already exists, skipping NvChad clone"
+  # No config at all — fresh install
+  NVCHAD_FRESH=true
 fi
 
-# ── Theme ───────────────────────────────────────────────────────
-mkdir -p ~/.config/nvim/lua
+if $NVCHAD_FRESH; then
+  git clone https://github.com/NvChad/starter "$NVIM_CFG"
+  rm -rf "$NVIM_CFG/.git"
+  info "NvChad starter cloned"
+fi
 
-cat >~/.config/nvim/lua/chadrc.lua <<EOF
+# ── Clear NvChad theme cache so the new theme takes effect ──────
+rm -rf ~/.local/share/nvim/lazy/base46/lua/base46/themes 2>/dev/null || true
+rm -rf ~/.cache/nvim/base46 2>/dev/null || true
+
+# ── Theme ───────────────────────────────────────────────────────
+mkdir -p "$NVIM_CFG/lua"
+
+cat >"$NVIM_CFG/lua/chadrc.lua" <<EOF
 ---@type ChadrcConfig
 local M = {}
 
@@ -49,9 +82,9 @@ return M
 EOF
 
 # ── Arduino plugin ──────────────────────────────────────────────
-mkdir -p ~/.config/nvim/lua/plugins
+mkdir -p "$NVIM_CFG/lua/plugins"
 
-cat >~/.config/nvim/lua/plugins/arduino.lua <<'LUA'
+cat >"$NVIM_CFG/lua/plugins/arduino.lua" <<'LUA'
 return {
   {
     "stevearc/vim-arduino",
@@ -65,9 +98,9 @@ return {
 LUA
 
 # ── LSP (clangd) ───────────────────────────────────────────────
-mkdir -p ~/.config/nvim/lua/configs
+mkdir -p "$NVIM_CFG/lua/configs"
 
-cat >~/.config/nvim/lua/configs/lspconfig.lua <<'LUA'
+cat >"$NVIM_CFG/lua/configs/lspconfig.lua" <<'LUA'
 local configs = require "nvchad.configs.lspconfig"
 
 local on_attach = configs.on_attach
@@ -91,7 +124,7 @@ lspconfig.clangd.setup {
 LUA
 
 # ── Keymaps ─────────────────────────────────────────────────────
-cat >~/.config/nvim/lua/mappings.lua <<'LUA'
+cat >"$NVIM_CFG/lua/mappings.lua" <<'LUA'
 require "nvchad.mappings"
 
 local map = vim.keymap.set
