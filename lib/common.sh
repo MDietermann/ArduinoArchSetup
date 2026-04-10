@@ -65,6 +65,15 @@ end_quiet_mode() {
   exec 1>&3 2>&4
   exec 3>&- 4>&-
   echo ""
+
+  # Restore original output helpers (fd 3/4 are closed now)
+  info() { echo -e "${GREEN}[✓]${NC} $1"; }
+  warn() { echo -e "${YELLOW}[!]${NC} $1"; }
+  error() {
+    echo -e "${RED}[✗]${NC} $1"
+    exit 1
+  }
+  step() { echo -e "\n${GREEN}━━━ $1 ━━━${NC}"; }
 }
 
 # ── Config backup helper ─────────────────────────────────────────
