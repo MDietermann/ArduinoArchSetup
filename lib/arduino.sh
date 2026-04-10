@@ -22,9 +22,13 @@ arduino-cli config add board_manager.additional_urls \
 arduino-cli config add board_manager.additional_urls \
   https://arduino.esp8266.com/stable/package_esp8266com_index.json 2>/dev/null || true
 
-# Use --insecure for all network operations (corporate/WSL environments often
-# have broken CA chains that Go's TLS stack rejects)
-ACLI="arduino-cli --insecure"
+# Older arduino-cli versions support --insecure for corporate/WSL environments
+# with broken CA chains.  The flag was removed in 1.0, so probe first.
+if arduino-cli --insecure version &>/dev/null; then
+  ACLI="arduino-cli --insecure"
+else
+  ACLI="arduino-cli"
+fi
 
 $ACLI core update-index
 
