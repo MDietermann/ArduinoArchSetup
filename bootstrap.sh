@@ -13,10 +13,13 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-info()  { echo -e "${GREEN}[✓]${NC} $1"; }
-warn()  { echo -e "${YELLOW}[!]${NC} $1"; }
-error() { echo -e "${RED}[✗]${NC} $1"; exit 1; }
-step()  { echo -e "\n${GREEN}━━━ $1 ━━━${NC}"; }
+info() { echo -e "${GREEN}[✓]${NC} $1"; }
+warn() { echo -e "${YELLOW}[!]${NC} $1"; }
+error() {
+  echo -e "${RED}[✗]${NC} $1"
+  exit 1
+}
+step() { echo -e "\n${GREEN}━━━ $1 ━━━${NC}"; }
 
 # ── Detect environment ──────────────────────────────────────────
 IS_WSL=false
@@ -49,7 +52,15 @@ step "1/9 — Installing base packages"
 
 if $IS_ARCH; then
   sudo pacman -Syu --noconfirm
-  $PKG_INSTALL base-devel git curl unzip wget ripgrep fd bat eza tree jq zsh clang tio
+  $PKG_INSTALL base-devel git curl unzip wget ripgrep fd bat eza tree jq zsh clang
+  # tio is in AUR — install yay if needed, then tio
+  if ! command -v yay &>/dev/null; then
+    info "Installing yay (AUR helper)..."
+    git clone https://aur.archlinux.org/yay.git /tmp/yay
+    (cd /tmp/yay && makepkg -si --noconfirm)
+    rm -rf /tmp/yay
+  fi
+  yay -S --needed --noconfirm tio
 else
   sudo apt update && sudo apt upgrade -y
   $PKG_INSTALL build-essential git curl unzip wget ripgrep bat eza tree jq zsh clang-format tio
@@ -62,8 +73,8 @@ info "Base packages installed"
 step "2/9 — Setting up Zsh"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || \
-  RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -kfsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" ||
+    RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -kfsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   info "Oh My Zsh installed"
 else
   info "Oh My Zsh already present"
@@ -71,10 +82,10 @@ fi
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-[[ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] && \
+[[ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] &&
   git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
 
-[[ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] && \
+[[ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] &&
   git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 
 info "Zsh plugins installed"
@@ -92,7 +103,7 @@ fi
 info "Starship installed"
 
 mkdir -p ~/.config
-cat > ~/.config/starship.toml << 'STARSHIP'
+cat >~/.config/starship.toml <<'STARSHIP'
 palette = "gruvbox_dark"
 format = """$directory$git_branch$git_status$character"""
 
@@ -137,7 +148,7 @@ info "Zellij installed"
 
 mkdir -p ~/.config/zellij/layouts
 
-cat > ~/.config/zellij/config.kdl << 'ZELLIJ_CFG'
+cat >~/.config/zellij/config.kdl <<'ZELLIJ_CFG'
 theme "gruvbox-dark"
 default_layout "default"
 default_mode "normal"
@@ -175,7 +186,7 @@ themes {
 }
 ZELLIJ_CFG
 
-cat > ~/.config/zellij/layouts/arduino.kdl << 'LAYOUT'
+cat >~/.config/zellij/layouts/arduino.kdl <<'LAYOUT'
 layout {
     tab name="code" focus=true {
         pane split_direction="vertical" {
@@ -238,7 +249,7 @@ fi
 
 mkdir -p ~/.config/nvim/lua/plugins
 
-cat > ~/.config/nvim/lua/plugins/gruvbox.lua << 'LUA'
+cat >~/.config/nvim/lua/plugins/gruvbox.lua <<'LUA'
 return {
   {
     "ellisonleao/gruvbox.nvim",
@@ -254,7 +265,7 @@ return {
 }
 LUA
 
-cat > ~/.config/nvim/lua/plugins/arduino.lua << 'LUA'
+cat >~/.config/nvim/lua/plugins/arduino.lua <<'LUA'
 return {
   {
     "stevearc/vim-arduino",
@@ -281,7 +292,7 @@ return {
 }
 LUA
 
-cat > ~/.config/nvim/lua/plugins/lsp.lua << 'LUA'
+cat >~/.config/nvim/lua/plugins/lsp.lua <<'LUA'
 return {
   {
     "neovim/nvim-lspconfig",
@@ -307,7 +318,11 @@ info "LazyVim plugins configured (Gruvbox + Arduino + LSP)"
 step "7/9 — Installing Arduino CLI + board cores"
 
 if ! command -v arduino-cli &>/dev/null; then
-  curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
+  if $IS_ARCH; then
+    $PKG_INSTALL arduino-cli
+  else
+    curl -kfsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sudo sh
+  fi
 fi
 info "Arduino CLI installed: $(arduino-cli version 2>/dev/null | head -1)"
 
@@ -350,7 +365,7 @@ fi
 info "Lazygit installed"
 
 mkdir -p ~/.config/lazygit
-cat > ~/.config/lazygit/config.yml << 'LAZYGIT'
+cat >~/.config/lazygit/config.yml <<'LAZYGIT'
 gui:
   theme:
     activeBorderColor:
@@ -372,7 +387,7 @@ step "9/9 — Creating project scaffolding tool"
 
 mkdir -p ~/.local/bin ~/.config/archduino/templates
 
-cat > ~/.local/bin/arduino-new << 'SCAFFOLD'
+cat >~/.local/bin/arduino-new <<'SCAFFOLD'
 #!/bin/bash
 set -e
 
@@ -441,7 +456,7 @@ SCAFFOLD
 chmod +x ~/.local/bin/arduino-new
 
 # Templates
-cat > ~/.config/archduino/templates/default.ino << 'INO'
+cat >~/.config/archduino/templates/default.ino <<'INO'
 void setup() {
   Serial.begin(115200);
   while (!Serial) { ; }
@@ -453,7 +468,7 @@ void loop() {
 }
 INO
 
-cat > ~/.config/archduino/templates/esp32.ino << 'INO'
+cat >~/.config/archduino/templates/esp32.ino <<'INO'
 #include <WiFi.h>
 
 const char* ssid = "YOUR_SSID";
@@ -478,7 +493,7 @@ void loop() {
 }
 INO
 
-cat > ~/.config/archduino/templates/esp8266.ino << 'INO'
+cat >~/.config/archduino/templates/esp8266.ino <<'INO'
 #include <ESP8266WiFi.h>
 
 const char* ssid = "YOUR_SSID";
@@ -509,7 +524,7 @@ step "Finalizing shell config"
 
 # Append archduino block to .zshrc if not already present
 if ! grep -q "ARCHDUINO" ~/.zshrc 2>/dev/null; then
-  cat >> ~/.zshrc << 'ZSHRC'
+  cat >>~/.zshrc <<'ZSHRC'
 
 # ── ARCHDUINO CONFIG ────────────────────────────────────────────
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
